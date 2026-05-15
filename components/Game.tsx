@@ -224,6 +224,7 @@ export function Game() {
   const handleErrorComplete = useCallback(() => {
     setInput([]);
     setShowError(false);
+    setFeedback(null);
   }, []);
 
   const moveToNextWord = useCallback(() => {
