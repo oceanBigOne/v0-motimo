@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -246,6 +247,17 @@ export function SettingsBar({
                   </>
                 )}
               </Button>
+            </div>
+
+            {/* Legal link */}
+            <div className="border-t border-border pt-6 mt-6">
+              <Link 
+                href="/mentions-legales" 
+                className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Mentions legales
+              </Link>
             </div>
           </div>
         </SheetContent>
