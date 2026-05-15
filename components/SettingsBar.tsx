@@ -3,8 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { 
+  Menu,
   Eye, 
   EyeOff, 
   Maximize, 
@@ -42,6 +50,7 @@ export function SettingsBar({
   onSkip,
 }: SettingsBarProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -60,140 +69,172 @@ export function SettingsBar({
   };
 
   return (
-    <div className="w-full bg-card border-b border-border shadow-sm">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
-        {/* Mobile: 2 rows, Desktop: 1 row */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
-          {/* Toggles group */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+    <div className="fixed top-4 right-4 z-50">
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className={cn(
+              "h-12 w-12 rounded-full shadow-lg",
+              "bg-white/90 backdrop-blur-sm",
+              "touch-manipulation"
+            )}
+            aria-label="Ouvrir les parametres"
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right" className="w-[300px] sm:w-[350px]">
+          <SheetHeader>
+            <SheetTitle className="text-xl font-bold">Parametres</SheetTitle>
+          </SheetHeader>
+          
+          <div className="mt-6 space-y-6">
             {/* Uppercase toggle */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between">
+              <label 
+                htmlFor="uppercase" 
+                className="text-base font-medium cursor-pointer flex items-center gap-2"
+              >
+                <LetterText className="w-5 h-5" />
+                Majuscules seulement
+              </label>
               <Switch
                 id="uppercase"
                 checked={uppercaseOnly}
                 onCheckedChange={setUppercaseOnly}
                 aria-label="Majuscules seulement"
               />
-              <label 
-                htmlFor="uppercase" 
-                className="text-xs sm:text-sm font-medium cursor-pointer flex items-center gap-1"
-              >
-                <LetterText className="w-4 h-4 hidden sm:inline" />
-                <span className="hidden sm:inline">Majuscules</span>
-                <span className="sm:hidden">MAJ</span>
-              </label>
             </div>
 
             {/* Show word toggle */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between">
+              <label 
+                htmlFor="showWord" 
+                className="text-base font-medium cursor-pointer flex items-center gap-2"
+              >
+                {showWord ? (
+                  <Eye className="w-5 h-5" />
+                ) : (
+                  <EyeOff className="w-5 h-5" />
+                )}
+                Afficher le mot
+              </label>
               <Switch
                 id="showWord"
                 checked={showWord}
                 onCheckedChange={setShowWord}
                 aria-label="Afficher le mot"
               />
-              <label 
-                htmlFor="showWord" 
-                className="text-xs sm:text-sm font-medium cursor-pointer flex items-center gap-1"
-              >
-                {showWord ? (
-                  <Eye className="w-4 h-4" />
-                ) : (
-                  <EyeOff className="w-4 h-4" />
-                )}
-                <span className="hidden sm:inline">Mot</span>
-              </label>
             </div>
 
             {/* Voice toggle */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between">
+              <label 
+                htmlFor="voice" 
+                className="text-base font-medium cursor-pointer flex items-center gap-2"
+              >
+                {voiceEnabled ? (
+                  <Volume2 className="w-5 h-5" />
+                ) : (
+                  <VolumeX className="w-5 h-5" />
+                )}
+                Voix activee
+              </label>
               <Switch
                 id="voice"
                 checked={voiceEnabled}
                 onCheckedChange={setVoiceEnabled}
-                aria-label="Voix activée"
+                aria-label="Voix activee"
               />
-              <label 
-                htmlFor="voice" 
-                className="text-xs sm:text-sm font-medium cursor-pointer flex items-center gap-1"
-              >
-                {voiceEnabled ? (
-                  <Volume2 className="w-4 h-4" />
-                ) : (
-                  <VolumeX className="w-4 h-4" />
-                )}
-                <span className="hidden sm:inline">Voix</span>
+            </div>
+
+            {/* Volume slider */}
+            <div className="space-y-3">
+              <label className="text-base font-medium flex items-center gap-2">
+                <Volume2 className="w-5 h-5" />
+                Volume
               </label>
+              <div className="flex items-center gap-3">
+                <VolumeX className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <Slider
+                  value={[volume]}
+                  onValueChange={([value]) => setVolume(value)}
+                  min={0}
+                  max={100}
+                  step={5}
+                  className="flex-1"
+                  aria-label="Volume"
+                />
+                <Volume2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-border pt-4" />
+
+            {/* Action buttons */}
+            <div className="space-y-3">
+              <Button
+                onClick={() => {
+                  onListen();
+                }}
+                variant="outline"
+                className={cn(
+                  "w-full h-12",
+                  "text-base font-medium",
+                  "touch-manipulation"
+                )}
+                aria-label="Reecouter le mot"
+              >
+                <Volume2 className="w-5 h-5 mr-2" />
+                Reecouter le mot
+              </Button>
+
+              <Button
+                onClick={() => {
+                  onSkip();
+                  setIsOpen(false);
+                }}
+                variant="outline"
+                className={cn(
+                  "w-full h-12",
+                  "text-base font-medium",
+                  "touch-manipulation"
+                )}
+                aria-label="Mot suivant"
+              >
+                <SkipForward className="w-5 h-5 mr-2" />
+                Passer au mot suivant
+              </Button>
+
+              <Button
+                onClick={toggleFullscreen}
+                variant="outline"
+                className={cn(
+                  "w-full h-12",
+                  "text-base font-medium",
+                  "touch-manipulation"
+                )}
+                aria-label={isFullscreen ? "Quitter le plein ecran" : "Plein ecran"}
+              >
+                {isFullscreen ? (
+                  <>
+                    <Minimize className="w-5 h-5 mr-2" />
+                    Quitter le plein ecran
+                  </>
+                ) : (
+                  <>
+                    <Maximize className="w-5 h-5 mr-2" />
+                    Plein ecran
+                  </>
+                )}
+              </Button>
             </div>
           </div>
-
-          {/* Volume slider */}
-          <div className="flex items-center gap-2 flex-1 min-w-[120px] max-w-[200px]">
-            <VolumeX className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            <Slider
-              value={[volume]}
-              onValueChange={([value]) => setVolume(value)}
-              min={0}
-              max={100}
-              step={5}
-              className="flex-1"
-              aria-label="Volume"
-            />
-            <Volume2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex items-center gap-2 sm:ml-auto">
-            <Button
-              onClick={onListen}
-              variant="outline"
-              size="sm"
-              className={cn(
-                "h-9 sm:h-10 px-3 sm:px-4",
-                "text-xs sm:text-sm font-medium",
-                "touch-manipulation"
-              )}
-              aria-label="Réécouter le mot"
-            >
-              <Volume2 className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Réécouter</span>
-            </Button>
-
-            <Button
-              onClick={onSkip}
-              variant="outline"
-              size="sm"
-              className={cn(
-                "h-9 sm:h-10 px-3 sm:px-4",
-                "text-xs sm:text-sm font-medium",
-                "touch-manipulation"
-              )}
-              aria-label="Mot suivant"
-            >
-              <SkipForward className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Passer</span>
-            </Button>
-
-            <Button
-              onClick={toggleFullscreen}
-              variant="outline"
-              size="sm"
-              className={cn(
-                "h-9 sm:h-10 px-3",
-                "text-xs sm:text-sm font-medium",
-                "touch-manipulation"
-              )}
-              aria-label={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
-            >
-              {isFullscreen ? (
-                <Minimize className="w-4 h-4" />
-              ) : (
-                <Maximize className="w-4 h-4" />
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
