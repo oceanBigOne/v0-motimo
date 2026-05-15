@@ -63,6 +63,10 @@ export function Game() {
   const inputRef = useRef<HTMLInputElement>(null);
   const gameContainerRef = useRef<HTMLDivElement>(null);
   
+  // Animation key to trigger re-animation on word change
+  const [emojiKey, setEmojiKey] = useState(0);
+  const [isEmojiExiting, setIsEmojiExiting] = useState(false);
+  
   const currentWord = wordList[currentIndex];
   const normalizedWord = currentWord ? normalizeWord(currentWord.word, uppercaseOnly) : '';
   const expectedLetters = currentWord ? extractLetters(normalizedWord) : [];
@@ -189,6 +193,7 @@ export function Game() {
     if (compareWords(inputWord, expectedWord, uppercaseOnly)) {
       // Success!
       setFeedback('success');
+      setIsEmojiExiting(true);
       
       // Play confetti
       confetti({
@@ -230,6 +235,8 @@ export function Game() {
   const moveToNextWord = useCallback(() => {
     setInput([]);
     setShowError(false);
+    setIsEmojiExiting(false);
+    setEmojiKey(prev => prev + 1);
     
     if (currentIndex >= wordList.length - 1) {
       // Reshuffle and start over
@@ -286,14 +293,14 @@ export function Game() {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-6 gap-6 sm:gap-8">
         {/* Emoji */}
         <div 
+          key={emojiKey}
           className={cn(
             "text-[100px] sm:text-[120px] md:text-[150px]",
-            "animate-pulse",
-            "select-none"
+            "select-none",
+            isEmojiExiting ? "animate-emoji-fade-out" : "animate-emoji-drop"
           )}
-          style={{ animationDuration: '3s' }}
           role="img"
-          aria-label={`Image représentant ${currentWord.word}`}
+          aria-label={`Image representant ${currentWord.word}`}
         >
           {currentWord.emoji}
         </div>
