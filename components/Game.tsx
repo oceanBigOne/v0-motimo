@@ -56,6 +56,9 @@ export function Game() {
   const [volume, setVolume] = useState(70);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   
+  // Device detection - hide virtual keyboard on desktop
+  const [isTouchDevice, setIsTouchDevice] = useState(true);
+  
   // Refs
   const inputRef = useRef<HTMLInputElement>(null);
   const gameContainerRef = useRef<HTMLDivElement>(null);
@@ -72,6 +75,21 @@ export function Game() {
     setVoiceEnabled(settings.voiceEnabled);
     setVolume(settings.volume);
     setSettingsLoaded(true);
+  }, []);
+
+  // Detect touch device
+  useEffect(() => {
+    const checkTouchDevice = () => {
+      const hasTouchScreen = 'ontouchstart' in window || 
+        navigator.maxTouchPoints > 0 ||
+        window.matchMedia('(pointer: coarse)').matches;
+      const isSmallScreen = window.innerWidth < 1024;
+      setIsTouchDevice(hasTouchScreen || isSmallScreen);
+    };
+    
+    checkTouchDevice();
+    window.addEventListener('resize', checkTouchDevice);
+    return () => window.removeEventListener('resize', checkTouchDevice);
   }, []);
 
   // Save settings to localStorage
@@ -316,16 +334,18 @@ export function Game() {
         />
       </main>
 
-      {/* Virtual Keyboard */}
-      <div className="sticky bottom-0 pb-4 px-2 sm:px-4 bg-gradient-to-t from-pink-100 to-transparent pt-4">
-        <VirtualKeyboard
-          onLetterPress={handleLetterPress}
-          onDelete={handleDelete}
-          onListen={handleListen}
-          uppercaseOnly={uppercaseOnly}
-          disabled={!!feedback}
-        />
-      </div>
+      {/* Virtual Keyboard - only shown on touch devices */}
+      {isTouchDevice && (
+        <div className="sticky bottom-0 pb-4 px-2 sm:px-4 bg-gradient-to-t from-pink-100 to-transparent pt-4">
+          <VirtualKeyboard
+            onLetterPress={handleLetterPress}
+            onDelete={handleDelete}
+            onListen={handleListen}
+            uppercaseOnly={uppercaseOnly}
+            disabled={!!feedback}
+          />
+        </div>
+      )}
 
       {/* Feedback Overlay */}
       <FeedbackOverlay 
