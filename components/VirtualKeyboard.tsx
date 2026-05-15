@@ -37,7 +37,7 @@ export function VirtualKeyboard({
       aria-label="Clavier virtuel"
     >
       {KEYBOARD_ROWS.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center gap-[3px] sm:gap-1.5 md:gap-2 mb-1 sm:mb-2">
+        <div key={rowIndex} className="flex justify-center gap-[4px] sm:gap-1.5 md:gap-2 mb-[4px] sm:mb-2 px-1">
           {row.map((letter) => (
             <Button
               key={letter}
@@ -45,9 +45,9 @@ export function VirtualKeyboard({
               disabled={disabled}
               variant="secondary"
               className={cn(
-                "min-w-[28px] w-[28px] h-10 p-0 sm:min-w-[38px] sm:w-[38px] sm:h-12 md:min-w-[48px] md:w-[48px] md:h-14",
-                "text-base sm:text-lg md:text-2xl font-bold",
-                "rounded-md sm:rounded-lg shadow-md",
+                "flex-1 max-w-[42px] h-11 p-0 sm:max-w-[48px] sm:h-12 md:max-w-[56px] md:h-14",
+                "text-lg sm:text-xl md:text-2xl font-bold",
+                "rounded-lg shadow-md",
                 "transition-all active:scale-95",
                 "touch-manipulation"
               )}
@@ -60,21 +60,21 @@ export function VirtualKeyboard({
       ))}
       
       {/* Action buttons row */}
-      <div className="flex justify-center gap-2 sm:gap-4 mt-2 sm:mt-4">
+      <div className="flex justify-center gap-3 sm:gap-4 mt-3 sm:mt-4 px-1">
         <Button
           onClick={onDelete}
           disabled={disabled}
           variant="destructive"
           className={cn(
-            "h-10 px-3 sm:h-12 sm:px-5 md:h-14 md:px-8",
-            "text-sm sm:text-base md:text-xl font-bold",
-            "rounded-md sm:rounded-lg shadow-md",
+            "flex-1 max-w-[160px] h-11 sm:h-12 md:h-14",
+            "text-base sm:text-lg md:text-xl font-bold",
+            "rounded-lg shadow-md",
             "transition-all active:scale-95",
             "touch-manipulation"
           )}
           aria-label="Effacer la derniere lettre"
         >
-          <Delete className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+          <Delete className="w-5 h-5 sm:w-5 sm:h-5 mr-2" />
           Effacer
         </Button>
         
@@ -83,15 +83,15 @@ export function VirtualKeyboard({
           disabled={disabled}
           variant="outline"
           className={cn(
-            "h-10 px-3 sm:h-12 sm:px-5 md:h-14 md:px-8",
-            "text-sm sm:text-base md:text-xl font-bold",
-            "rounded-md sm:rounded-lg shadow-md border-2",
+            "flex-1 max-w-[160px] h-11 sm:h-12 md:h-14",
+            "text-base sm:text-lg md:text-xl font-bold",
+            "rounded-lg shadow-md border-2",
             "transition-all active:scale-95",
             "touch-manipulation bg-card"
           )}
           aria-label="Reecouter le mot"
         >
-          <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+          <Volume2 className="w-5 h-5 sm:w-5 sm:h-5 mr-2" />
           Reecouter
         </Button>
       </div>
