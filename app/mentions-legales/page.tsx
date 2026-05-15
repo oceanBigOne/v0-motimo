@@ -28,6 +28,35 @@ export default function MentionsLegalesPage() {
             <p className="text-gray-600">
               Motimo est une application educative pour enfants developpee a des fins pedagogiques.
             </p>
+            <p className="text-gray-600">
+              Ce projet a ete realise a l&apos;aide de{" "}
+              <a 
+                href="https://v0.dev" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                V0 by Vercel
+              </a>
+              , un assistant IA pour le developpement web.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-lg font-semibold text-gray-800">Code source</h2>
+            <p className="text-gray-600">
+              Le code source de cette application est disponible sur GitHub :
+            </p>
+            <p>
+              <a 
+                href="https://github.com/oceanBigOne/v0-motimo" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                https://github.com/oceanBigOne/v0-motimo
+              </a>
+            </p>
           </section>
 
           <section className="space-y-3">
