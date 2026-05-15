@@ -37,27 +37,29 @@ export function FeedbackOverlay({ type, onComplete }: FeedbackOverlayProps) {
       aria-live="polite"
       aria-label={type === 'success' ? 'Bravo !' : 'Réessaie !'}
     >
-      {type === 'success' ? (
-        <div className="flex flex-col items-center gap-4 animate-in zoom-in duration-300">
-          <CheckCircle2 
-            className="w-32 h-32 sm:w-40 sm:h-40 text-green-500 drop-shadow-lg" 
-            strokeWidth={2.5}
-          />
-          <span className="text-4xl sm:text-5xl font-bold text-green-500 drop-shadow-lg">
-            Bravo !
-          </span>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center gap-4 animate-in zoom-in duration-200">
-          <XCircle 
-            className="w-32 h-32 sm:w-40 sm:h-40 text-red-500 drop-shadow-lg animate-pulse" 
-            strokeWidth={2.5}
-          />
-          <span className="text-4xl sm:text-5xl font-bold text-red-500 drop-shadow-lg">
-            Réessaie !
-          </span>
-        </div>
-      )}
+      <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 sm:p-12 shadow-2xl">
+        {type === 'success' ? (
+          <div className="flex flex-col items-center gap-4 animate-in zoom-in duration-300">
+            <CheckCircle2 
+              className="w-32 h-32 sm:w-40 sm:h-40 text-green-500" 
+              strokeWidth={2.5}
+            />
+            <span className="text-4xl sm:text-5xl font-bold text-green-600">
+              Bravo !
+            </span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-4 animate-in zoom-in duration-200">
+            <XCircle 
+              className="w-32 h-32 sm:w-40 sm:h-40 text-red-500 animate-pulse" 
+              strokeWidth={2.5}
+            />
+            <span className="text-4xl sm:text-5xl font-bold text-red-600">
+              Réessaie !
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
