@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -69,7 +70,21 @@ export function SettingsBar({
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50">
+    <>
+      {/* Logo in top left */}
+      <div className="fixed top-3 left-3 z-50">
+        <Image
+          src="/images/logo.png"
+          alt="Motimo"
+          width={80}
+          height={60}
+          className="h-auto w-16 sm:w-20"
+          priority
+        />
+      </div>
+
+      {/* Menu button in top right */}
+      <div className="fixed top-4 right-4 z-50">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
@@ -235,6 +250,7 @@ export function SettingsBar({
           </div>
         </SheetContent>
       </Sheet>
-    </div>
+      </div>
+    </>
   );
 }
