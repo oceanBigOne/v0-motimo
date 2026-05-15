@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from 'next'
-import { Nunito } from 'next/font/google'
+import { Roboto } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const nunito = Nunito({ 
+const roboto = Roboto({ 
   subsets: ["latin"],
-  weight: ['400', '600', '700', '800'],
-  variable: '--font-nunito',
+  weight: ['400', '500', '700'],
+  variable: '--font-roboto',
 })
 
 export const metadata: Metadata = {
@@ -49,7 +49,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className="bg-sky-100">
-      <body className={`${nunito.variable} font-sans antialiased`}>
+      <body className={`${roboto.variable} font-sans antialiased`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
