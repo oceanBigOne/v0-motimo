@@ -193,7 +193,6 @@ export function Game() {
     if (compareWords(inputWord, expectedWord, uppercaseOnly)) {
       // Success!
       setFeedback('success');
-      setIsEmojiExiting(true);
       
       // Play confetti
       confetti({
@@ -207,6 +206,11 @@ export function Game() {
       
       // Speak the word
       speakWord(currentWord.word, volume / 100, voiceEnabled);
+      
+      // Start emoji fade out just before moving to next word
+      setTimeout(() => {
+        setIsEmojiExiting(true);
+      }, 2700);
       
       // Wait and move to next word
       setTimeout(() => {
