@@ -3,12 +3,14 @@
 import { FeedbackOverlay } from "@/components/FeedbackOverlay";
 import { LetterBoxes } from "@/components/LetterBoxes";
 import { SettingsBar } from "@/components/SettingsBar";
+import { SyllableOverlay } from "@/components/SyllableOverlay";
 import { VirtualKeyboard } from "@/components/VirtualKeyboard";
 import { words, type WordItem } from "@/data/words";
 import { compareWords, extractLetters, normalizeWord } from "@/lib/normalizeWord";
 import { shuffle } from "@/lib/shuffle";
 import { initSounds, playErrorSound, playSuccessSound } from "@/lib/sounds";
 import { loadVoices, speakWord } from "@/lib/speech";
+import { getCurrentSyllable } from "@/lib/syllables";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -66,6 +68,10 @@ export function Game() {
   // Animation key to trigger re-animation on word change
   const [emojiKey, setEmojiKey] = useState(0);
   const [isEmojiExiting, setIsEmojiExiting] = useState(false);
+  
+  // Syllable overlay state
+  const [currentSyllable, setCurrentSyllable] = useState<string | null>(null);
+  const [lastCompletedSyllableIndex, setLastCompletedSyllableIndex] = useState(-1);
   
   const currentWord = wordList[currentIndex];
   const normalizedWord = currentWord ? normalizeWord(currentWord.word, uppercaseOnly) : '';
@@ -161,18 +167,35 @@ export function Game() {
   }, [feedback, uppercaseOnly, input, expectedLetters]);
 
   const handleLetterPress = useCallback((letter: string) => {
-    if (feedback) return;
+    if (feedback || currentSyllable) return;
     
     if (input.length < expectedLetters.length) {
       const newInput = [...input, letter];
       setInput(newInput);
+      
+      // Check for syllable completion
+      const syllableInfo = getCurrentSyllable(normalizedWord, newInput.length);
+      if (syllableInfo && syllableInfo.isComplete && syllableInfo.syllableIndex > lastCompletedSyllableIndex) {
+        // Only show syllable if it's not the last one (word completion)
+        if (newInput.length < expectedLetters.length) {
+          setCurrentSyllable(syllableInfo.syllable);
+          setLastCompletedSyllableIndex(syllableInfo.syllableIndex);
+          
+          // Speak the syllable
+          speakWord(syllableInfo.syllable, volume / 100, voiceEnabled);
+        }
+      }
       
       // Check if complete
       if (newInput.length === expectedLetters.length) {
         validateWord(newInput);
       }
     }
-  }, [input, expectedLetters, feedback]);
+  }, [input, expectedLetters, feedback, currentSyllable, normalizedWord, lastCompletedSyllableIndex, volume, voiceEnabled]);
+
+  const handleSyllableComplete = useCallback(() => {
+    setCurrentSyllable(null);
+  }, []);
 
   const handleDelete = useCallback(() => {
     if (feedback) return;
@@ -241,6 +264,7 @@ export function Game() {
     setShowError(false);
     setIsEmojiExiting(false);
     setEmojiKey(prev => prev + 1);
+    setLastCompletedSyllableIndex(-1);
     
     if (currentIndex >= wordList.length - 1) {
       // Reshuffle and start over
@@ -364,6 +388,12 @@ export function Game() {
       <FeedbackOverlay 
         type={feedback} 
         onComplete={handleErrorComplete}
+      />
+
+      {/* Syllable Overlay */}
+      <SyllableOverlay
+        syllable={currentSyllable}
+        onComplete={handleSyllableComplete}
       />
     </div>
   );
