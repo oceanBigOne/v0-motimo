@@ -330,6 +330,7 @@ export function Game() {
             input={input}
             uppercaseOnly={uppercaseOnly}
             showError={showError}
+            expectedLetters={expectedLetters}
           />
         </div>
 

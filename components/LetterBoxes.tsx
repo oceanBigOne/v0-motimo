@@ -8,9 +8,10 @@ interface LetterBoxesProps {
   input: string[];
   uppercaseOnly: boolean;
   showError: boolean;
+  expectedLetters: string[];
 }
 
-export function LetterBoxes({ word, input, uppercaseOnly, showError }: LetterBoxesProps) {
+export function LetterBoxes({ word, input, uppercaseOnly, showError, expectedLetters }: LetterBoxesProps) {
   const normalizedWord = normalizeWord(word, uppercaseOnly);
   
   // Build display with letters and separators
@@ -24,11 +25,15 @@ export function LetterBoxes({ word, input, uppercaseOnly, showError }: LetterBox
       };
     }
     const inputChar = input[letterIndex] || '';
+    const expectedChar = expectedLetters[letterIndex] || '';
+    const isCorrect = inputChar.toUpperCase() === expectedChar.toUpperCase();
     letterIndex++;
     return {
       type: 'letter' as const,
       char,
       inputChar: uppercaseOnly ? inputChar.toUpperCase() : inputChar,
+      expectedChar,
+      isCorrect,
       index,
     };
   });
@@ -62,7 +67,9 @@ export function LetterBoxes({ word, input, uppercaseOnly, showError }: LetterBox
               showError 
                 ? "border-red-500 bg-red-50"
                 : item.inputChar 
-                  ? "border-primary bg-primary/10 text-primary" 
+                  ? item.isCorrect
+                    ? "border-green-500 bg-green-50 text-green-700"
+                    : "border-red-500 bg-red-50 text-red-700"
                   : "border-muted-foreground/30 bg-card"
             )}
             aria-label={item.inputChar ? `Lettre ${item.inputChar}` : "Case vide"}
