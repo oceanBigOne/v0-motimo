@@ -26,7 +26,9 @@ export function LetterBoxes({ word, input, uppercaseOnly, showError, expectedLet
     }
     const inputChar = input[letterIndex] || '';
     const expectedChar = expectedLetters[letterIndex] || '';
-    const isCorrect = inputChar.toUpperCase() === expectedChar.toUpperCase();
+    // Normalize both characters to compare without accents
+    const normalizeChar = (c: string) => c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    const isCorrect = inputChar ? normalizeChar(inputChar) === normalizeChar(expectedChar) : false;
     letterIndex++;
     return {
       type: 'letter' as const,
