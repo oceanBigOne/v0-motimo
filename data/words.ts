@@ -52,7 +52,7 @@ export const words: WordItem[] = [
   { emoji: "🐓", word: "Coq" },
   { emoji: "🦃", word: "Dindon" },
   { emoji: "🐎", word: "Poney" },
-  { emoji: "🐄", word: "Bœuf" },
+  { emoji: "🐄", word: "Boeuf" },
 
   // Fruits
   { emoji: "🍎", word: "Pomme" },
@@ -213,7 +213,7 @@ export const words: WordItem[] = [
   { emoji: "🧦", word: "Chaussettes" },
   { emoji: "👓", word: "Lunettes" },
   { emoji: "👜", word: "Sac" },
-  { emoji: "🎀", word: "Nœud" },
+  { emoji: "🎀", word: "Noeud" },
   { emoji: "👑", word: "Couronne" },
   { emoji: "💍", word: "Bague" },
   { emoji: "👢", word: "Botte" },
@@ -244,8 +244,8 @@ export const words: WordItem[] = [
   { emoji: "🥐", word: "Croissant" },
   { emoji: "🥖", word: "Baguette" },
   { emoji: "🧀", word: "Fromage" },
-  { emoji: "🍳", word: "Œuf" },
-  { emoji: "🥚", word: "Œuf" },
+  { emoji: "🍳", word: "Oeuf" },
+  { emoji: "🥚", word: "Oeuf" },
   { emoji: "🍝", word: "Pâtes" },
   { emoji: "🍜", word: "Soupe" },
   { emoji: "🍦", word: "Glace" },
@@ -308,8 +308,8 @@ export const words: WordItem[] = [
   { emoji: "🖨️", word: "Imprimante" },
 
   // Symboles et divers
-  { emoji: "❤️", word: "Cœur" },
-  { emoji: "💜", word: "Cœur" },
+  { emoji: "❤️", word: "Coeur" },
+  { emoji: "💜", word: "Coeur" },
   { emoji: "🔥", word: "Feu" },
   { emoji: "💧", word: "Goutte" },
   { emoji: "🎃", word: "Citrouille" },
