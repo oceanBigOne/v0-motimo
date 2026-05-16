@@ -229,7 +229,7 @@ export const words: WordItem[] = [
   { emoji: "👩‍⚕️", word: "Docteur", syllables: ["doc", "teur"] },
   { emoji: "👨‍🌾", word: "Fermier", syllables: ["fer", "mier"] },
   { emoji: "👨‍🔧", word: "Mécanicien", syllables: ["mé", "ca", "ni", "cien"] },
-  { emoji: "👷", word: "Ouvrier", syllables: ["ou", "vrier"] },
+  { emoji: "👷", word: "Ouvrier", syllables: ["ou", "vri", "er"] },
   { emoji: "🧑‍✈️", word: "Pilote", syllables: ["pi", "lote"] },
   { emoji: "👨‍🎨", word: "Artiste", syllables: ["ar", "tiste"] },
   { emoji: "🧑‍🎤", word: "Chanteur", syllables: ["chan", "teur"] },
