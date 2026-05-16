@@ -166,6 +166,22 @@ export function Game() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [feedback, uppercaseOnly, input, expectedLetters]);
 
+  const moveToNextWord = useCallback(() => {
+    setInput([]);
+    setShowError(false);
+    setIsEmojiExiting(false);
+    setEmojiKey(prev => prev + 1);
+    setSyllableQueue([]);
+    
+    if (currentIndex >= wordList.length - 1) {
+      // Reshuffle and start over
+      setWordList(shuffle(words));
+      setCurrentIndex(0);
+    } else {
+      setCurrentIndex(prev => prev + 1);
+    }
+  }, [currentIndex, wordList.length]);
+
   const handleLetterPress = useCallback((letter: string) => {
     if (feedback || currentSyllable) return;
     
@@ -297,22 +313,6 @@ export function Game() {
     setShowError(false);
     setFeedback(null);
   }, []);
-
-  const moveToNextWord = useCallback(() => {
-    setInput([]);
-    setShowError(false);
-    setIsEmojiExiting(false);
-    setEmojiKey(prev => prev + 1);
-    setSyllableQueue([]);
-    
-    if (currentIndex >= wordList.length - 1) {
-      // Reshuffle and start over
-      setWordList(shuffle(words));
-      setCurrentIndex(0);
-    } else {
-      setCurrentIndex(prev => prev + 1);
-    }
-  }, [currentIndex, wordList.length]);
 
   const handleSkip = useCallback(() => {
     if (feedback) return;
