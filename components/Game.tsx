@@ -10,7 +10,6 @@ import { compareWords, extractLetters, normalizeWord } from "@/lib/normalizeWord
 import { shuffle } from "@/lib/shuffle";
 import { initSounds, playErrorSound, playSuccessSound } from "@/lib/sounds";
 import { loadVoices, speakWord } from "@/lib/speech";
-import { splitIntoSyllables } from "@/lib/syllables";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -258,8 +257,8 @@ export function Game() {
     const expectedWord = expectedLetters.join('');
     
     if (compareWords(inputWord, expectedWord, uppercaseOnly)) {
-      // Success! Start syllable sequence
-      const syllables = splitIntoSyllables(normalizedWord);
+      // Success! Start syllable sequence using phonetic syllables from word data
+      const syllables = currentWord.syllables || [currentWord.word];
       
       if (syllables.length > 1) {
         // Multiple syllables - show them one by one
