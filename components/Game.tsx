@@ -10,7 +10,7 @@ import { compareWords, extractLetters, normalizeWord } from "@/lib/normalizeWord
 import { shuffle } from "@/lib/shuffle";
 import { initSounds, playErrorSound, playSuccessSound } from "@/lib/sounds";
 import { loadVoices, speakWord } from "@/lib/speech";
-import { getCurrentSyllable } from "@/lib/syllables";
+import { splitIntoSyllables } from "@/lib/syllables";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -71,7 +71,7 @@ export function Game() {
   
   // Syllable overlay state
   const [currentSyllable, setCurrentSyllable] = useState<string | null>(null);
-  const [lastCompletedSyllableIndex, setLastCompletedSyllableIndex] = useState(-1);
+  const [syllableQueue, setSyllableQueue] = useState<string[]>([]);
   
   const currentWord = wordList[currentIndex];
   const normalizedWord = currentWord ? normalizeWord(currentWord.word, uppercaseOnly) : '';
@@ -173,29 +173,57 @@ export function Game() {
       const newInput = [...input, letter];
       setInput(newInput);
       
-      // Check for syllable completion
-      const syllableInfo = getCurrentSyllable(normalizedWord, newInput.length);
-      if (syllableInfo && syllableInfo.isComplete && syllableInfo.syllableIndex > lastCompletedSyllableIndex) {
-        // Only show syllable if it's not the last one (word completion)
-        if (newInput.length < expectedLetters.length) {
-          setCurrentSyllable(syllableInfo.syllable);
-          setLastCompletedSyllableIndex(syllableInfo.syllableIndex);
-          
-          // Speak the syllable
-          speakWord(syllableInfo.syllable, volume / 100, voiceEnabled);
-        }
-      }
-      
       // Check if complete
       if (newInput.length === expectedLetters.length) {
         validateWord(newInput);
       }
     }
-  }, [input, expectedLetters, feedback, currentSyllable, normalizedWord, lastCompletedSyllableIndex, volume, voiceEnabled]);
+  }, [input, expectedLetters, feedback, currentSyllable]);
 
   const handleSyllableComplete = useCallback(() => {
-    setCurrentSyllable(null);
-  }, []);
+    // Show next syllable in queue or finish
+    if (syllableQueue.length > 0) {
+      const [nextSyllable, ...rest] = syllableQueue;
+      setSyllableQueue(rest);
+      
+      // Small delay before showing next syllable
+      setTimeout(() => {
+        setCurrentSyllable(nextSyllable);
+        speakWord(nextSyllable, volume / 100, voiceEnabled);
+      }, 200);
+    } else {
+      setCurrentSyllable(null);
+      
+      // Now show success feedback
+      setFeedback('success');
+      
+      // Play confetti
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      // Play success sound
+      playSuccessSound(volume / 100);
+      
+      // Speak the full word
+      setTimeout(() => {
+        speakWord(currentWord.word, volume / 100, voiceEnabled);
+      }, 300);
+      
+      // Start emoji fade out just before moving to next word
+      setTimeout(() => {
+        setIsEmojiExiting(true);
+      }, 2700);
+      
+      // Wait and move to next word
+      setTimeout(() => {
+        moveToNextWord();
+        setFeedback(null);
+      }, 3000);
+    }
+  }, [syllableQueue, volume, voiceEnabled, currentWord, moveToNextWord]);
 
   const handleDelete = useCallback(() => {
     if (feedback) return;
@@ -214,32 +242,43 @@ export function Game() {
     const expectedWord = expectedLetters.join('');
     
     if (compareWords(inputWord, expectedWord, uppercaseOnly)) {
-      // Success!
-      setFeedback('success');
+      // Success! Start syllable sequence
+      const syllables = splitIntoSyllables(normalizedWord);
       
-      // Play confetti
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      
-      // Play success sound
-      await playSuccessSound(volume / 100);
-      
-      // Speak the word
-      speakWord(currentWord.word, volume / 100, voiceEnabled);
-      
-      // Start emoji fade out just before moving to next word
-      setTimeout(() => {
-        setIsEmojiExiting(true);
-      }, 2700);
-      
-      // Wait and move to next word
-      setTimeout(() => {
-        moveToNextWord();
-        setFeedback(null);
-      }, 3000);
+      if (syllables.length > 1) {
+        // Multiple syllables - show them one by one
+        const [firstSyllable, ...restSyllables] = syllables;
+        setSyllableQueue(restSyllables);
+        setCurrentSyllable(firstSyllable);
+        speakWord(firstSyllable, volume / 100, voiceEnabled);
+      } else {
+        // Single syllable word - go directly to success
+        setFeedback('success');
+        
+        // Play confetti
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        
+        // Play success sound
+        await playSuccessSound(volume / 100);
+        
+        // Speak the word
+        speakWord(currentWord.word, volume / 100, voiceEnabled);
+        
+        // Start emoji fade out just before moving to next word
+        setTimeout(() => {
+          setIsEmojiExiting(true);
+        }, 2700);
+        
+        // Wait and move to next word
+        setTimeout(() => {
+          moveToNextWord();
+          setFeedback(null);
+        }, 3000);
+      }
     } else {
       // Error!
       setFeedback('error');
@@ -264,7 +303,7 @@ export function Game() {
     setShowError(false);
     setIsEmojiExiting(false);
     setEmojiKey(prev => prev + 1);
-    setLastCompletedSyllableIndex(-1);
+    setSyllableQueue([]);
     
     if (currentIndex >= wordList.length - 1) {
       // Reshuffle and start over
