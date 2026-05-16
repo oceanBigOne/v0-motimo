@@ -39,9 +39,6 @@ function loadSettings() {
   };
 }
 
-// Vowels for speech trigger
-const VOWELS = ['a', 'e', 'i', 'o', 'u', 'y', 'A', 'E', 'I', 'O', 'U', 'Y'];
-
 export function Game() {
   // Word state
   const [wordList, setWordList] = useState<WordItem[]>([]);
@@ -170,18 +167,12 @@ export function Game() {
       const newInput = [...input, letter];
       setInput(newInput);
       
-      // If vowel is typed, speak the current input
-      if (VOWELS.includes(letter) && voiceEnabled) {
-        const currentInputWord = newInput.join('');
-        speakWord(currentInputWord, volume / 100, true);
-      }
-      
       // Check if complete
       if (newInput.length === expectedLetters.length) {
         validateWord(newInput);
       }
     }
-  }, [input, expectedLetters, feedback, voiceEnabled, volume]);
+  }, [input, expectedLetters, feedback]);
 
   const handleDelete = useCallback(() => {
     if (feedback) return;
