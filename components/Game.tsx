@@ -71,6 +71,7 @@ export function Game() {
   // Syllable overlay state
   const [currentSyllable, setCurrentSyllable] = useState<string | null>(null);
   const [syllableQueue, setSyllableQueue] = useState<string[]>([]);
+  const [vocalQueue, setVocalQueue] = useState<string[]>([]);
   
   const currentWord = wordList[currentIndex];
   const normalizedWord = currentWord ? normalizeWord(currentWord.word, uppercaseOnly) : '';
@@ -171,6 +172,7 @@ export function Game() {
     setIsEmojiExiting(false);
     setEmojiKey(prev => prev + 1);
     setSyllableQueue([]);
+    setVocalQueue([]);
     
     if (currentIndex >= wordList.length - 1) {
       // Reshuffle and start over
@@ -198,13 +200,15 @@ export function Game() {
   const handleSyllableComplete = useCallback(() => {
     // Show next syllable in queue or finish
     if (syllableQueue.length > 0) {
-      const [nextSyllable, ...rest] = syllableQueue;
-      setSyllableQueue(rest);
+      const [nextSyllable, ...restSyllables] = syllableQueue;
+      const [nextVocal, ...restVocals] = vocalQueue.length > 0 ? vocalQueue : [nextSyllable, ...syllableQueue.slice(1)];
+      setSyllableQueue(restSyllables);
+      setVocalQueue(restVocals);
       
       // Small delay before showing next syllable
       setTimeout(() => {
         setCurrentSyllable(nextSyllable);
-        speakWord(nextSyllable, volume / 100, voiceEnabled);
+        speakWord(nextVocal, volume / 100, voiceEnabled);
       }, 200);
     } else {
       setCurrentSyllable(null);
@@ -238,7 +242,7 @@ export function Game() {
         setFeedback(null);
       }, 3000);
     }
-  }, [syllableQueue, volume, voiceEnabled, currentWord, moveToNextWord]);
+  }, [syllableQueue, vocalQueue, volume, voiceEnabled, currentWord, moveToNextWord]);
 
   const handleDelete = useCallback(() => {
     if (feedback) return;
@@ -258,14 +262,21 @@ export function Game() {
     
     if (compareWords(inputWord, expectedWord, uppercaseOnly)) {
       // Success! Start syllable sequence using phonetic syllables from word data
-      const syllables = currentWord.syllables || [currentWord.word];
+      // Use vocal array for pronunciation if available, otherwise fallback to syllables
+      const displaySyllables = currentWord.syllables || [currentWord.word];
+      const vocalSyllables = currentWord.vocal || displaySyllables;
       
-      if (syllables.length > 1) {
+      if (displaySyllables.length > 1) {
         // Multiple syllables - show them one by one
-        const [firstSyllable, ...restSyllables] = syllables;
-        setSyllableQueue(restSyllables);
-        setCurrentSyllable(firstSyllable);
-        speakWord(firstSyllable, volume / 100, voiceEnabled);
+        // We display the written syllable but speak the vocal version
+        const [firstDisplay, ...restDisplay] = displaySyllables;
+        const [firstVocal, ...restVocal] = vocalSyllables;
+        
+        // Store both queues - we'll handle vocal in handleSyllableComplete
+        setSyllableQueue(restDisplay);
+        setVocalQueue(restVocal);
+        setCurrentSyllable(firstDisplay);
+        speakWord(firstVocal, volume / 100, voiceEnabled);
       } else {
         // Single syllable word - go directly to success
         setFeedback('success');
