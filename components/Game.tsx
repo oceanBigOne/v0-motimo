@@ -13,6 +13,7 @@ import { loadVoices, speakWord } from "@/lib/speech";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 // localStorage keys
 const STORAGE_KEYS = {
@@ -41,6 +42,10 @@ function loadSettings() {
 }
 
 export function Game() {
+  // URL params
+  const searchParams = useSearchParams();
+  const forcedWord = searchParams.get('word');
+  
   // Word state
   const [wordList, setWordList] = useState<WordItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -125,8 +130,22 @@ export function Game() {
 
   // Initialize word list
   useEffect(() => {
-    setWordList(shuffle(words));
-  }, []);
+    let initialList = shuffle(words);
+    
+    // Check if there's a forced word in URL params
+    if (forcedWord) {
+      const foundIndex = words.findIndex(
+        w => w.word.toLowerCase() === forcedWord.toLowerCase()
+      );
+      if (foundIndex !== -1) {
+        // Put the forced word at the beginning
+        const forcedWordItem = words[foundIndex];
+        initialList = [forcedWordItem, ...initialList.filter(w => w !== forcedWordItem)];
+      }
+    }
+    
+    setWordList(initialList);
+  }, [forcedWord]);
 
   // Initialize audio and speech
   useEffect(() => {
