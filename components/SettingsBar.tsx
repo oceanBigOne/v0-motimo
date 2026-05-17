@@ -101,12 +101,12 @@ export function SettingsBar({
             <Menu className="h-6 w-6" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-[320px] sm:w-[380px] px-6">
-          <SheetHeader className="pb-4">
+        <SheetContent side="right" className="w-[320px] sm:w-[380px] px-6 flex flex-col">
+          <SheetHeader className="pb-4 flex-shrink-0">
             <SheetTitle className="text-xl font-bold">Parametres</SheetTitle>
           </SheetHeader>
           
-          <div className="mt-4 space-y-8 pr-2">
+          <div className="mt-4 space-y-8 pr-2 overflow-y-auto flex-1">
             {/* Uppercase toggle */}
             <div className="flex items-center justify-between">
               <label 
